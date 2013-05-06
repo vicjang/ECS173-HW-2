@@ -34,7 +34,8 @@ IF(NOT MSVC)
 ENDIF(NOT MSVC)
 
 ADD_EXECUTABLE(IterativeClosestPoint1 IterativeClosestPoint1.cxx )
-TARGET_LINK_LIBRARIES(IterativeClosestPoint1 ITKAlgorithms ITKFEM ITKStatistics ITKIO ITKBasicFilters ITKCommon vtkCommon vtkIO vtkHybrid vtkRendering)
+#TARGET_LINK_LIBRARIES(IterativeClosestPoint1 ITKAlgorithms ITKFEM ITKStatistics ITKIO ITKBasicFilters ITKCommon vtkCommon vtkIO vtkHybrid vtkRendering)
+TARGET_LINK_LIBRARIES(IterativeClosestPoint1 ${ITK_LIBRARIES} vtkCommon vtkIO vtkHybrid vtkRendering)
 
 ADD_EXECUTABLE(gui gui.cpp)
 

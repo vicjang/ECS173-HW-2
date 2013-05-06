@@ -325,7 +325,8 @@ int main(int argc, char * argv[] )
 
   try 
     {
-    registration->StartRegistration();
+//    registration->StartRegistration();
+    registration->Update();
     }
   catch( itk::ExceptionObject & e )
     {
