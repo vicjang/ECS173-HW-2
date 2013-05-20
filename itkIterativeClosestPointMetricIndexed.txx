@@ -202,11 +202,11 @@ IterativeClosestPointMetricIndexed<TFixedPointSet,TMovingPointSet>
     while( pointItr != pointEnd )
       {
         double dist = this->m_DistanceFunction->Evaluate(pointItr.Value(),p);
-	
+    
         if(dist<cp.distance)
           {
-	    cp.distance = dist;
-	    cp.fixedPoint=pointItr.Value();
+        cp.distance = dist;
+        cp.fixedPoint=pointItr.Value();
           }
         pointItr++;
       }
@@ -225,7 +225,22 @@ double
 IterativeClosestPointMetricIndexed<TFixedPointSet,TMovingPointSet>
 ::DistanceFunctionYOURS::Evaluate(const FixedPointSetPointType& p1,const typename Superclass::OutputPointType& p2) {
 
-  // Put your code here for answering the second question on the assignment
+    // The following part is basically what was in the original
+    // SquaredEuclideanDistanceTo function
+    int dimension = p1.GetPointDimension();
+    double sum = 0;
+    for ( unsigned int i = 0; i < dimension; i++ )
+        {
+        const double component = (double)( p2[i] );
+        const double difference = (double)( p1[i] ) - component;
+        sum += difference * difference;
+        }
+
+    // Truncated distance function
+    // value 700 was determined through observation of sum values printed.
+    return ( sum > 700 ) ? 700 : sum;
+
+
 }
 
 //    ------------   Your code for question 3 here ---------------
