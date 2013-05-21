@@ -230,22 +230,23 @@ int main(int argc, char * argv[] )
 
   //  ----------  Here is how you would plug in your very own DistanceFunction to solve question 2 :
 
-  MetricType::DistanceFunctionYOURS* distanceFunction = new MetricType::DistanceFunctionYOURS;
-  metric->SetDistanceFunction(distanceFunction);
-
-//  MetricType::DistanceFunctionL2* distanceFunction = new MetricType::DistanceFunctionL2;
-//  metric->SetDistanceFunction(distanceFunction);
+#if(1)
+    MetricType::DistanceFunctionYOURS* distanceFunction = new MetricType::DistanceFunctionYOURS;
+    metric->SetDistanceFunction(distanceFunction);
+#else
+    MetricType::DistanceFunctionL2* distanceFunction = new MetricType::DistanceFunctionL2;
+    metric->SetDistanceFunction(distanceFunction);
+#endif
 
   //  ----------  Here is how you would plug in your very own ClosestPointFunction to solve question 3 :
 
-  //  MetricType::ClosestPointFunctionYOURS* closestPointFunction = new MetricType::ClosestPointFunctionYOURS;
-
-  //  metric->SetClosestPointFunction(closestPointFunction);
-
-  MetricType::ClosestPointFunctionVertex* closestPointFunction = new MetricType::ClosestPointFunctionVertex;
-
+#if(1)
+  MetricType::ClosestPointFunctionYOURS* closestPointFunction = new MetricType::ClosestPointFunctionYOURS;
   metric->SetClosestPointFunction(closestPointFunction);
-
+#else
+  MetricType::ClosestPointFunctionVertex* closestPointFunction = new MetricType::ClosestPointFunctionVertex;
+  metric->SetClosestPointFunction(closestPointFunction);
+#endif
 
 //-----------------------------------------------------------
 // Set up a Transform

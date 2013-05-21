@@ -249,8 +249,99 @@ template <class TFixedPointSet, class TMovingPointSet>
 void
 IterativeClosestPointMetricIndexed<TFixedPointSet,TMovingPointSet>
 ::ClosestPointFunctionYOURS::Evaluate(FixedPointSetConstPointer pointSet,const typename Superclass::OutputPointType &p,CPInfo& cp) {
-  // Put your code for answering the third question on the assignment here
+
+    // K is the number of points on the fixed mesh to be taken into consideration for robust point matching
+    const int K = 3;
+    int it = 0;
+    std::list< double >                   shortestDistances;
+    std::list< FixedPointSetPointType >   thePoints;
+    shortestDistances.push_back( 0 );
+    shortestDistances.back();
+
+// This part is the code from the original closest point function
+   // Go trough the list of fixed point and find the closest distance
+    PointIterator pointItr = pointSet->GetPoints()->Begin();
+    PointIterator pointEnd = pointSet->GetPoints()->End();
+    cp.distance = NumericTraits<double>::max();
+    cp.fixedPoint=pointItr.Value();
+
+    if (!this->m_DistanceFunction)
+    { 
+        itk::ExceptionObject exception(__FILE__, __LINE__);
+        char msg[1024];
+        sprintf(msg,"Distance Function not set.");
+        exception.SetDescription(msg);
+        char loc[1024];
+        sprintf(loc,"IterativeClosestPointMetricIndexed::ClosestPointFunctionVertex::Evaluate.");
+        exception.SetLocation(loc);
+        throw exception;
+    }
+// end of original code
+
+    double temp_min_distance = NumericTraits<double>::max();
+    FixedPointSetPointType temp_point;
+
+
+    cp.movingPoint = p;
+    while( it < K )
+    {
+        while( pointItr != pointEnd )
+        {
+            double dist = this->m_DistanceFunction->Evaluate( pointItr.Value(), p );
+        
+            if( ( dist < temp_min_distance ) && ( dist > shortestDistances.back() + 0.001 ) )
+            {
+                temp_min_distance = dist;
+                temp_point = pointItr.Value();
+            }
+            pointItr++;
+        }
+
+        // when the minimum is found, store it in a vector
+        shortestDistances.push_back( temp_min_distance );
+        thePoints.push_back( temp_point );
+
+
+        // reset the varaibl and restart from beginning until we have the K minimums
+        temp_min_distance = NumericTraits<double>::max();
+        pointItr = pointSet->GetPoints()->Begin();
+        it++;
+    }
+
+
+    // pop the 0 that was initially pushed for iteratively finding minimums
+    shortestDistances.pop_front();
+    std::list< double >::iterator dis_iter = shortestDistances.begin();
+    typename std::list< FixedPointSetPointType >::iterator pt_iter =  thePoints.begin();
+
+    double sum = 0;
+    itk::Vector<float, 3> vec;
+    vec[0] = 0.0;
+    vec[1] = 0.0;
+    vec[2] = 0.0;
+
+    for( ; dis_iter != shortestDistances.end() ; dis_iter++, pt_iter++ )
+    {
+        // convert itk::Point to itk::Vector to perform mathematical computation
+        vec += ( pt_iter->GetVectorFromOrigin() ) * ( 1 / sqrt(*dis_iter) );
+        sum += ( 1 / sqrt(*dis_iter) );
+    }
+    // the closest point afte RPM
+    vec = vec * ( 1 / sum );
+
+    FixedPointSetPointType matched_point;
+    matched_point[0] = 0.0;
+    matched_point[1] = 0.0;
+    matched_point[2] = 0.0;
+    // convert vector back to point by adding a vector from origin
+    matched_point += vec;
+
+    // store final return value
+    cp.distance = this->m_DistanceFunction->Evaluate( matched_point, p );
+    cp.fixedPoint = matched_point;
+
 }
+
 } // end namespace itk
 
 
